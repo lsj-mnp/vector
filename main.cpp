@@ -5,17 +5,15 @@ int main()
 {
 	using std::cout;
 
-	CVector::CVectorBaseIterator* aa = (CVector::CVectorBaseIterator*)new CVector::CVectorIterator(nullptr);
-
 	std::vector<int> v{};
 	for (auto it = v.begin(); it != v.end(); ++it)
 	{
-		*it;
+		*it = 1;
 	}
 
 	for (auto it = v.rbegin(); it != v.rend(); ++it)
 	{
-		*it;
+		*it = 3;
 	}
 
 	CVector a{ 1, 3, 5 };
@@ -29,6 +27,11 @@ int main()
 	}
 
 	for (auto it = a.rbegin(); it != a.rend(); ++it)
+	{
+		cout << *it;
+	}
+
+	for (auto it = a.cbegin(); it != a.cend(); ++it)
 	{
 		cout << *it;
 	}

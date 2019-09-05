@@ -34,6 +34,29 @@ public:
 		int* m_At{};
 	};
 
+	class CVectorBaseConstIterator
+	{
+	public:
+		CVectorBaseConstIterator(int* At) : m_At{ At } {};
+		virtual ~CVectorBaseConstIterator() {};
+
+		virtual CVectorBaseConstIterator& operator++() = 0;
+
+		virtual bool operator!=(const CVectorBaseConstIterator& B)
+		{
+			return (m_At != B.m_At) ? true : false;
+		}
+
+		virtual const int& operator*()
+		{
+			assert(m_At);
+			return *m_At;
+		}
+
+	protected:
+		int* m_At{};
+	};
+
 	class CVectorIterator : public CVectorBaseIterator
 	{
 	public:
@@ -41,6 +64,19 @@ public:
 		~CVectorIterator() {};
 
 		CVectorIterator& operator++() override
+		{
+			++m_At;
+			return *this;
+		}
+	};
+
+	class CVectorConstIterator : public CVectorBaseConstIterator
+	{
+	public:
+		CVectorConstIterator(int* At) : CVectorBaseConstIterator(At) {};
+		~CVectorConstIterator() {};
+
+		CVectorConstIterator& operator++() override
 		{
 			++m_At;
 			return *this;
@@ -59,6 +95,24 @@ public:
 			return *this;
 		}
 	};
+
+	class CVectorConstReverseIterator : public CVectorBaseConstIterator
+	{
+	public:
+		CVectorConstReverseIterator(int* At) : CVectorBaseConstIterator(At) {};
+		~CVectorConstReverseIterator() {};
+
+		CVectorConstReverseIterator& operator++() override
+		{
+			--m_At;
+			return *this;
+		}
+	};
+
+	using iterator = CVectorIterator;
+	using const_iterator = CVectorConstIterator;
+	using reverse_iterator = CVectorReverseIterator;
+	using const_reverse_iterator = CVectorConstReverseIterator;
 
 public:
 	CVector()
@@ -171,24 +225,44 @@ public: // 자료 삽입/제거 함수들
 	}
 
 public: // iterator 함수들
-	CVectorIterator begin()
+	iterator begin()
 	{
-		return CVectorIterator(&m_Data[0]);
+		return iterator(&m_Data[0]);
 	}
 
-	CVectorIterator end()
+	iterator end()
 	{
-		return CVectorIterator(&m_Data[m_Size]);
+		return iterator(&m_Data[m_Size]);
 	}
 
-	CVectorReverseIterator rbegin()
+	const_iterator cbegin()
 	{
-		return CVectorReverseIterator(&m_Data[m_Size - 1]);
+		return const_iterator(&m_Data[0]);
+	}
+
+	const_iterator cend()
+	{
+		return const_iterator(&m_Data[m_Size]);
+	}
+
+	reverse_iterator rbegin()
+	{
+		return reverse_iterator(&m_Data[m_Size - 1]);
 	}
 	
-	CVectorReverseIterator rend()
+	reverse_iterator rend()
 	{
-		return CVectorReverseIterator(&m_Data[-1]);
+		return reverse_iterator(&m_Data[-1]);
+	}
+
+	const_reverse_iterator crbegin()
+	{
+		return const_reverse_iterator(&m_Data[m_Size - 1]);
+	}
+
+	const_reverse_iterator crend()
+	{
+		return const_reverse_iterator(&m_Data[-1]);
 	}
 
 public: // 기타 함수들
