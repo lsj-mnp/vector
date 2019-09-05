@@ -9,14 +9,66 @@
 class CVector
 {
 public:
+	class CVectorBaseIterator // 인터페이스 : 순수 가상 함수가 포함된 클래스. 양식서 같은 것
+	{
+	public:
+		CVectorBaseIterator(int* At) : m_At{ At } {};
+		virtual ~CVectorBaseIterator() {};
+
+		// 순수 가상 함수. 공란 같은 것.
+		// 상속받은 클래스에서 채워넣어야 함
+		virtual CVectorBaseIterator& operator++() = 0;
+
+		virtual bool operator!=(const CVectorBaseIterator& B)
+		{
+			return (m_At != B.m_At) ? true : false;
+		}
+
+		virtual int& operator*()
+		{
+			assert(m_At);
+			return *m_At;
+		}
+
+	protected:
+		int* m_At{};
+	};
+
+	class CVectorIterator : public CVectorBaseIterator
+	{
+	public:
+		CVectorIterator(int* At) : CVectorBaseIterator(At) {};
+		~CVectorIterator() {};
+
+		CVectorIterator& operator++() override
+		{
+			++m_At;
+			return *this;
+		}
+	};
+
+	class CVectorReverseIterator : public CVectorBaseIterator
+	{
+	public:
+		CVectorReverseIterator(int* At) : CVectorBaseIterator(At) {};
+		~CVectorReverseIterator() {};
+
+		CVectorReverseIterator& operator++() override
+		{
+			--m_At;
+			return *this;
+		}
+	};
+
+public:
 	CVector()
 	{
-		std::cout << "기본 생성자가 호출되었습니다.\n";
+		//std::cout << "기본 생성자가 호출되었습니다.\n";
 	};
 
 	CVector(const std::initializer_list<int>& i_list)
 	{
-		std::cout << "initializer_list를 이용한 생성자가 호출되었습니다.\n";
+		//std::cout << "initializer_list를 이용한 생성자가 호출되었습니다.\n";
 
 		const int* first{ i_list.begin() };
 
@@ -30,7 +82,7 @@ public:
 
 	~CVector()
 	{
-		std::cout << "소멸자가 호출되었습니다.\n";
+		//std::cout << "소멸자가 호출되었습니다.\n";
 
 		SAFE_DELETE(m_Data);
 	};
@@ -116,6 +168,27 @@ public: // 자료 삽입/제거 함수들
 		{
 			PopBack();
 		}
+	}
+
+public: // iterator 함수들
+	CVectorIterator begin()
+	{
+		return CVectorIterator(&m_Data[0]);
+	}
+
+	CVectorIterator end()
+	{
+		return CVectorIterator(&m_Data[m_Size]);
+	}
+
+	CVectorReverseIterator rbegin()
+	{
+		return CVectorReverseIterator(&m_Data[m_Size - 1]);
+	}
+	
+	CVectorReverseIterator rend()
+	{
+		return CVectorReverseIterator(&m_Data[-1]);
 	}
 
 public: // 기타 함수들
